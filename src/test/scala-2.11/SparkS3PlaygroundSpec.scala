@@ -34,8 +34,9 @@ class SparkS3PlaygroundSpec extends FlatSpec with Matchers with BeforeAndAfterAl
 	}
 
 	override def beforeAll() {
-		sc.hadoopConfiguration.set("fs.s3n.awsAccessKeyId", "AKIAI45KHONKXDS4SSZA")
-		sc.hadoopConfiguration.set("fs.s3n.awsSecretAccessKey", "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")
+		//TODO: set aws credentials
+		sc.hadoopConfiguration.set("fs.s3n.awsAccessKeyId", "")
+		sc.hadoopConfiguration.set("fs.s3n.awsSecretAccessKey", "")
 	}
 
 	override def afterAll() {

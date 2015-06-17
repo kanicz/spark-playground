@@ -7,9 +7,6 @@ import org.scalatest._
 
 class SparkS3PlaygroundSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
 
-	val logFilePath: String = "s3n://kanicz-spark-demo/access_log"
-	val modifiedLogFilePath: String = "s3n://kanicz-spark-demo/access_log_modified"
-
 	val conf: SparkConf = new SparkConf().setAppName("foo").setMaster("local")
 	val sc: SparkContext = new SparkContext(conf)
 	var logLines: RDD[String] = null
@@ -17,14 +14,18 @@ class SparkS3PlaygroundSpec extends FlatSpec with Matchers with BeforeAndAfterAl
 	it should "download log from S3, process and upload gzipped result back to S3" in {
 
 		//download from S3
-		logLines = sc.textFile(logFilePath, 2)
+		logLines = sc.textFile("s3n://kanicz-spark-demo/access_log", 2)
 
 		// modify each line somehow
 		val modifiedLogs = logLines.map(line => (line + "foo", ""))
 
 		modifiedLogs
+
+			// result will be saved as 1 file
 			.coalesce(1)
-			.saveAsHadoopFile(modifiedLogFilePath,
+
+			// save with gzip compression on S3
+			.saveAsHadoopFile("s3n://kanicz-spark-demo/access_log_modified",
 				classOf[String],
 				classOf[String],
 				classOf[TextOutputFormat[String, String]],
